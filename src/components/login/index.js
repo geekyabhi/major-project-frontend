@@ -53,8 +53,9 @@ function Login() {
 				setError("Network error");
 			}
 		} catch (e) {
+			let er = e?.response?.data?.error || "Login Error";
 			setLoading(false);
-			setError("Some Error Occurred");
+			setError(er);
 		}
 	};
 

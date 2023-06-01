@@ -39,6 +39,13 @@ function Dashboard() {
 		e.preventDefault();
 		try {
 			setLoading(true);
+			console.log(machine, "Machine");
+			console.log(name, "Name");
+			if (!machine || machine === "") {
+				setError("Select Machine");
+				setLoading(false);
+				return;
+			}
 			const { data } = await axios.post(`${url}/api/plan`, {
 				machine,
 				name,
@@ -56,47 +63,45 @@ function Dashboard() {
 			}
 		} catch (e) {
 			setLoading(false);
-			setError("Some Error Occurred");
+			console.log(e);
+			setError(`${String(e)}`);
 		}
 	};
 
+	const submitLogout = () => {
+		localStorage.removeItem("visualUserInfo");
+		navigate("/login");
+	};
+
 	return (
-		<div className="container d-flex my-5 justify-content-center align-items-center auth-page">
-			{/* <div className="left-section">
-				<h2 className="logoHeading">Visual</h2>
-				<img
-					src="https://miro.medium.com/max/1400/0*r7ymuCxhlg-foJBy.jpg"
-					className="register-img"
-					alt="display_img"
-				/>
-			</div> */}
+		<div className="container auth-page">
+			<div>
+				<Button className="logout-button" onClick={submitLogout}>
+					Logout
+				</Button>
+			</div>
+			<div className="formBox">
+				{error && <Message variant={"danger"}>{error}</Message>}
+				{success && (
+					<Message variant={"success"}>
+						Machine created Successfully
+					</Message>
+				)}
+				<p className="box-heading text-center">
+					SPIN OFF ANY RESOURCE THAT YOU WANT
+				</p>
+				{success && (
+					<div className="machine-info-box">
+						<p className="machine-label">Your Port Number</p>
+						<p className="machine-info">{resources.port}</p>
+						<p className="machine-label">Your Machine Name</p>
+						<p className="machine-info">{resources.name}</p>
+						<p className="machine-label">Your Machine Id</p>
+						<p className="machine-info">{resources.containerId}</p>
+					</div>
+				)}
 
-			<div className="form-container p-4" id="formBox">
-				<div style={{ width: "100%" }}>
-					{error && <Message variant={"danger"}>{error}</Message>}
-					{success && (
-						<Message variant={"success"}>
-							Machine created Successfully
-						</Message>
-					)}
-					{success && (
-						<div>
-							<p>Your Port Number</p>
-							<p>{resources.port}</p>
-							<p>Your Machine Name</p>
-							<p>{resources.name}</p>
-							<p>Your Machine Id</p>
-							<p>{resources.containerId}</p>
-						</div>
-					)}
-
-					<p className="box-heading text-center">
-						SPIN OFF ANY RESOURCE THAT YOU WANT
-					</p>
-					<p className="box-sub-heading text-center">
-						Monitor all your apis at one place
-					</p>
-
+				<Form onSubmit={submitLogin}>
 					<Form.Group controlId="formBasicName">
 						<Form.Label>Name For Machine </Form.Label>
 						<Form.Control
@@ -112,28 +117,21 @@ function Dashboard() {
 					<Form.Group controlId="formBasicName">
 						<Form.Label>Select machine </Form.Label>
 						<Form.Control
-							type="text"
-							placeholder="Optional"
+							as="select"
 							value={machine}
 							onChange={(e) => {
 								setMachine(e.target.value);
-							}}
-						/>
-						{/* <DropdownButton
-							id="dropdown-item-button"
-							onSelect={(e) => {
-								console.log(e);
+								console.log(e.target.value);
 							}}
 						>
-							<Dropdown.ItemText>
-								Select machine
-							</Dropdown.ItemText>
-							<Dropdown.Item as="button">Redis</Dropdown.Item>
-							<Dropdown.Item as="button">Mongo DB</Dropdown.Item>
-						</DropdownButton> */}
+							<option value="">Select Machine</option>
+							<option value="redis">Redis</option>
+							<option value="mongo">Mongo DB</option>
+							<option value="serveride">Vs Code Server</option>
+						</Form.Control>
 					</Form.Group>
 
-					<Form onSubmit={submitLogin}>
+					<div>
 						{loading ? (
 							<Loader />
 						) : (
@@ -145,8 +143,8 @@ function Dashboard() {
 								Extract Resource
 							</Button>
 						)}
-					</Form>
-				</div>
+					</div>
+				</Form>
 			</div>
 		</div>
 	);

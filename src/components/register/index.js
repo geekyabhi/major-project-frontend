@@ -57,8 +57,9 @@ function Register() {
 				setError("Network error");
 			}
 		} catch (e) {
+			let er = e?.response?.data?.error || "Signup Error";
 			setLoading(false);
-			setError("Some Error Occurred");
+			setError(er);
 		}
 	};
 
